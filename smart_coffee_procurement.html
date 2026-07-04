@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Smart Coffee Procurement System</title>
+  <style>
+    :root {
+      --ink: #1d2520; --muted: #66726a; --line: #dde4de; --page: #f6f8f4;
+      --panel: #ffffff; --coffee: #6f4f37; --leaf: #27755d; --gold: #c69236;
+      --sky: #dcebf0; --shadow: 0 18px 42px rgba(29, 37, 32, .08);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Tahoma, Arial, sans-serif; color: var(--ink); background: var(--page); letter-spacing: 0; }
+    button, input, select { font: inherit; }
+    .app { min-height: 100vh; display: grid; grid-template-columns: 260px minmax(0, 1fr); }
+    .sidebar { background: #17231d; color: white; padding: 24px 18px; position: sticky; top: 0; height: 100vh; }
+    .brand { display: flex; gap: 12px; align-items: center; margin-bottom: 26px; }
+    .brand-mark { width: 46px; height: 46px; display: grid; place-items: center; border-radius: 8px; background: #e7c17a; box-shadow: inset 0 -8px 0 rgba(0, 0, 0, .1); }
+    .brand h1 { margin: 0; font-size: 18px; line-height: 1.25; }
+    .brand p { margin: 2px 0 0; color: #b8c6bd; font-size: 12px; }
+    .nav { display: grid; gap: 8px; }
+    .nav a { color: #dce8e0; text-decoration: none; display: flex; align-items: center; padding: 11px 12px; border-radius: 8px; font-size: 14px; }
+    .nav a:hover, .nav a.active { background: rgba(255, 255, 255, .12); color: #fff; }
+    .main { min-width: 0; padding: 26px; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin-bottom: 22px; }
+    .title h2 { margin: 0; font-size: 28px; line-height: 1.2; }
+    .title p { margin: 6px 0 0; color: var(--muted); }
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+    .btn { border: 0; border-radius: 8px; padding: 11px 14px; cursor: pointer; background: var(--leaf); color: white; display: inline-flex; align-items: center; justify-content: center; min-height: 42px; }
+    .btn.secondary { color: var(--ink); background: white; border: 1px solid var(--line); }
+    .metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-bottom: 18px; }
+    .metric { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 18px; box-shadow: var(--shadow); }
+    .metric span { color: var(--muted); font-size: 13px; }
+    .metric strong { display: block; margin-top: 8px; font-size: 26px; }
+    .metric small { display: block; margin-top: 6px; color: var(--leaf); }
+    .modules { display: grid; grid-template-columns: repeat(5, minmax(150px, 1fr)); gap: 14px; margin: 18px 0; }
+    .module, .section { background: white; border: 1px solid var(--line); border-radius: 8px; box-shadow: var(--shadow); }
+    .module { padding: 16px; min-height: 142px; }
+    .module-icon { width: 38px; height: 38px; display: grid; place-items: center; border-radius: 8px; background: var(--sky); color: #184a58; margin-bottom: 12px; font-weight: 700; }
+    .module h3 { margin: 0 0 6px; font-size: 16px; }
+    .module p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.45; }
+    .grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(320px, .75fr); gap: 18px; align-items: start; }
+    .section { overflow: hidden; }
+    .section-header { padding: 16px 18px; border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .section-header h3 { margin: 0; font-size: 18px; }
+    .section-header p { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+    .status { border-radius: 999px; padding: 6px 10px; font-size: 12px; white-space: nowrap; }
+    .status.good { background: #e6f4ed; color: #136246; }
+    .status.warn { background: #fff3d7; color: #75521a; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; min-width: 760px; }
+    th, td { padding: 14px 18px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: middle; font-size: 14px; }
+    th { color: var(--muted); font-size: 12px; background: #fbfcfa; }
+    .form { padding: 18px; display: grid; gap: 14px; }
+    .field { display: grid; gap: 7px; }
+    .field label { color: var(--muted); font-size: 13px; }
+    .field input, .field select { width: 100%; border: 1px solid var(--line); border-radius: 8px; min-height: 42px; padding: 10px 12px; background: #fff; color: var(--ink); }
+    .split { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .flow { padding: 18px; background: linear-gradient(180deg, #ffffff 0%, #f8fbf7 100%); }
+    .flow svg { width: 100%; height: auto; display: block; }
+    .impact { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-top: 18px; }
+    .impact-item { background: #17231d; color: white; border-radius: 8px; padding: 16px; }
+    .impact-item span { color: #e7c17a; font-size: 24px; font-weight: 700; }
+    .impact-item p { margin: 8px 0 0; color: #dce8e0; font-size: 14px; }
+    .timeline { padding: 18px; display: grid; gap: 12px; }
+    .phase { display: grid; grid-template-columns: 96px 1fr; gap: 12px; align-items: start; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+    .phase:last-child { border-bottom: 0; padding-bottom: 0; }
+    .phase strong { color: var(--coffee); }
+    .phase p { margin: 0; color: var(--muted); line-height: 1.5; font-size: 14px; }
+    .toast { position: fixed; right: 22px; bottom: 22px; background: #17231d; color: white; padding: 12px 14px; border-radius: 8px; box-shadow: var(--shadow); transform: translateY(120px); opacity: 0; transition: .25s ease; max-width: min(360px, calc(100vw - 44px)); }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    @media (max-width: 1120px) { .app { grid-template-columns: 1fr; } .sidebar { position: static; height: auto; } .nav { grid-template-columns: repeat(5, minmax(130px, 1fr)); overflow-x: auto; } .grid, .metrics, .impact { grid-template-columns: repeat(2, minmax(0, 1fr)); } .modules { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 680px) { .main { padding: 18px; } .topbar, .section-header { align-items: stretch; flex-direction: column; } .actions { justify-content: stretch; } .btn { width: 100%; } .grid, .metrics, .modules, .impact, .split { grid-template-columns: 1fr; } .title h2 { font-size: 24px; } .phase { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand"><div class="brand-mark" aria-hidden="true"><svg width="28" height="28" viewBox="0 0 32 32" fill="none"><path d="M9.1 24.7c5.7 4.1 14.4.4 16.1-6.5 1.8-7.1-3-14-10.2-14.8C11.9 8.2 9.2 15.3 9.1 24.7Z" fill="#432818"/><path d="M15.1 4.8c2.2 6.8 1 13.6-4.1 19.4" stroke="#f3d28c" stroke-width="2" stroke-linecap="round"/></svg></div><div><h1>Smart Coffee Procurement</h1><p>ระบบจัดซื้อเมล็ดกาแฟ</p></div></div>
+      <nav class="nav" aria-label="เมนูหลัก"><a class="active" href="#dashboard">ภาพรวม</a><a href="#farmers">เกษตรกร</a><a href="#procurement">จัดซื้อ</a><a href="#quality">ตรวจคุณภาพ</a><a href="#reports">รายงาน</a></nav>
+    </aside>
+    <main class="main">
+      <section id="dashboard" class="topbar"><div class="title"><h2>Dashboard ผู้บริหาร</h2><p>ติดตามการรับซื้อ คุณภาพ สต็อก และต้นทุนจากแหล่งเดียว</p></div><div class="actions"><button class="btn secondary" id="exportBtn">ส่งออกรายงาน</button><button class="btn" id="newLotBtn">เพิ่มล็อตรับซื้อ</button></div></section>
+      <section class="metrics" aria-label="ตัวชี้วัดระบบ"><article class="metric"><span>เกษตรกรในระบบ</span><strong>128</strong><small>+12 รายในเดือนนี้</small></article><article class="metric"><span>รับซื้อเดือนนี้</span><strong>18.6 ตัน</strong><small>สูงกว่าแผน 7%</small></article><article class="metric"><span>คะแนน cupping เฉลี่ย</span><strong>84.2</strong><small>Specialty grade</small></article><article class="metric"><span>ต้นทุนลดลง</span><strong>14%</strong><small>จากการลดงานเอกสาร</small></article></section>
+      <section class="modules" id="farmers" aria-label="โมดูลระบบ"><article class="module"><div class="module-icon">F</div><h3>Farmer Module</h3><p>จัดการข้อมูลเกษตรกร แปลงปลูก พื้นที่ และประวัติการส่งมอบ</p></article><article class="module"><div class="module-icon">P</div><h3>Procurement Module</h3><p>บันทึกการรับซื้อ น้ำหนัก ราคา และสถานะการอนุมัติ</p></article><article class="module"><div class="module-icon">Q</div><h3>Quality Control</h3><p>ตรวจคุณภาพ ความชื้น defect และคะแนน cupping</p></article><article class="module"><div class="module-icon">I</div><h3>Inventory Module</h3><p>ติดตามสต็อก ล็อตสินค้า โกดัง และ traceability</p></article><article class="module"><div class="module-icon">R</div><h3>Reporting Module</h3><p>สรุปยอดรับซื้อ รายงานคุณภาพ และข้อมูลสำหรับผู้บริหาร</p></article></section>
+      <section class="grid"><article class="section" id="procurement"><div class="section-header"><div><h3>รายการรับซื้อเมล็ดกาแฟ</h3><p>CRUD ตัวอย่างสำหรับบันทึกล็อตรับซื้อและตรวจสอบย้อนหลัง</p></div><span class="status good">โปร่งใสและตรวจสอบได้</span></div><div class="table-wrap"><table><thead><tr><th>Lot ID</th><th>เกษตรกร</th><th>ประเภท</th><th>น้ำหนัก</th><th>ราคา/กก.</th><th>คุณภาพ</th><th>สถานะ</th></tr></thead><tbody id="lotTable"><tr><td>CF-2607-001</td><td>สมชาย ดอยแก้ว</td><td>Arabica parchment</td><td>1,250 กก.</td><td>145 บาท</td><td>86.0</td><td><span class="status good">อนุมัติ</span></td></tr><tr><td>CF-2607-002</td><td>วิภา แม่แตง</td><td>Arabica green bean</td><td>820 กก.</td><td>168 บาท</td><td>84.5</td><td><span class="status warn">รอตรวจสต็อก</span></td></tr><tr><td>CF-2607-003</td><td>กลุ่มบ้านห้วยห้อม</td><td>Robusta green bean</td><td>2,400 กก.</td><td>112 บาท</td><td>80.2</td><td><span class="status good">อนุมัติ</span></td></tr></tbody></table></div></article>
+      <aside class="section"><div class="section-header"><div><h3>เพิ่มล็อตรับซื้อ</h3><p>ฟอร์มตัวอย่างสำหรับ Phase 2</p></div></div><form class="form" id="lotForm"><div class="field"><label for="farmer">ชื่อเกษตรกร/กลุ่ม</label><input id="farmer" name="farmer" value="นงลักษณ์ ดอยช้าง" required></div><div class="split"><div class="field"><label for="coffeeType">ประเภทกาแฟ</label><select id="coffeeType" name="coffeeType"><option>Arabica parchment</option><option>Arabica green bean</option><option>Robusta green bean</option><option>Natural process</option></select></div><div class="field"><label for="weight">น้ำหนัก (กก.)</label><input id="weight" name="weight" type="number" min="1" value="600" required></div></div><div class="split"><div class="field"><label for="price">ราคา/กก. (บาท)</label><input id="price" name="price" type="number" min="1" value="152" required></div><div class="field"><label for="score">คะแนน cupping</label><input id="score" name="score" type="number" min="0" max="100" step=".1" value="85.3" required></div></div><button class="btn" type="submit">บันทึกล็อตรับซื้อ</button></form></aside></section>
+      <section class="grid" style="margin-top:18px"><article class="section" id="quality"><div class="section-header"><div><h3>Quality Control & Inventory Flow</h3><p>เชื่อมโยงเกษตรกร การรับซื้อ การตรวจคุณภาพ และสต็อก</p></div><span class="status warn">Traceability ready</span></div><div class="flow" aria-label="แผนภาพกระบวนการจัดซื้อกาแฟ"><svg viewBox="0 0 720 280" role="img" aria-labelledby="flowTitle"><title id="flowTitle">แผนภาพกระบวนการจากเกษตรกรสู่รายงานผู้บริหาร</title><defs><filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="10" stdDeviation="8" flood-color="#1d2520" flood-opacity=".12"/></filter></defs><rect x="24" y="48" width="132" height="110" rx="8" fill="#e6f4ed" filter="url(#softShadow)"/><rect x="204" y="48" width="132" height="110" rx="8" fill="#fff3d7" filter="url(#softShadow)"/><rect x="384" y="48" width="132" height="110" rx="8" fill="#dcebf0" filter="url(#softShadow)"/><rect x="564" y="48" width="132" height="110" rx="8" fill="#f1e8df" filter="url(#softShadow)"/><path d="M156 103H204M336 103H384M516 103H564" stroke="#6f4f37" stroke-width="4" stroke-linecap="round"/><path d="M195 94l12 9-12 9M375 94l12 9-12 9M555 94l12 9-12 9" fill="none" stroke="#6f4f37" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><text x="90" y="86" text-anchor="middle" font-size="16" font-weight="700" fill="#1d2520">Farmer</text><text x="90" y="116" text-anchor="middle" font-size="13" fill="#66726a">ข้อมูลแปลงปลูก</text><text x="270" y="86" text-anchor="middle" font-size="16" font-weight="700" fill="#1d2520">Procurement</text><text x="270" y="116" text-anchor="middle" font-size="13" fill="#66726a">รับซื้อและราคา</text><text x="450" y="86" text-anchor="middle" font-size="16" font-weight="700" fill="#1d2520">Quality</text><text x="450" y="116" text-anchor="middle" font-size="13" fill="#66726a">คะแนน cupping</text><text x="630" y="86" text-anchor="middle" font-size="16" font-weight="700" fill="#1d2520">Inventory</text><text x="630" y="116" text-anchor="middle" font-size="13" fill="#66726a">สต็อกและโกดัง</text><rect x="204" y="198" width="312" height="48" rx="8" fill="#17231d"/><path d="M630 158v64H516" stroke="#6f4f37" stroke-width="4" fill="none" stroke-linecap="round"/><text x="360" y="229" text-anchor="middle" font-size="15" font-weight="700" fill="#ffffff">Reporting Dashboard</text></svg></div></article><aside class="section" id="reports"><div class="section-header"><div><h3>Phase Roadmap</h3><p>แผนพัฒนาตาม prompt JavaScript</p></div></div><div class="timeline"><div class="phase"><strong>Phase 1</strong><p>Foundation: สร้าง Monorepo ด้วย Node.js, Express, Vite และ SQLite</p></div><div class="phase"><strong>Phase 2</strong><p>Procurement: พัฒนา CRUD สำหรับการรับซื้อเมล็ดกาแฟ</p></div><div class="phase"><strong>Phase 3</strong><p>Quality: เพิ่มการประเมินคุณภาพและคะแนน cupping</p></div><div class="phase"><strong>Phase 4</strong><p>Dashboard: สร้างรายงานและหน้าสรุปสำหรับผู้บริหาร</p></div></div></aside></section>
+      <section class="impact" aria-label="ผลกระทบทางธุรกิจ"><article class="impact-item"><span>01</span><p>ลดงานเอกสารด้วยการบันทึกข้อมูลรับซื้อแบบดิจิทัล</p></article><article class="impact-item"><span>02</span><p>เพิ่มความโปร่งใสของราคา น้ำหนัก และผลตรวจคุณภาพ</p></article><article class="impact-item"><span>03</span><p>ตรวจสอบย้อนหลังได้ตั้งแต่เกษตรกรจนถึงสต็อกในโกดัง</p></article><article class="impact-item"><span>04</span><p>ลดต้นทุนการจัดซื้อและช่วยตัดสินใจด้วยข้อมูลจริง</p></article></section>
+    </main>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script>
+    const form = document.querySelector('#lotForm');
+    const table = document.querySelector('#lotTable');
+    const toast = document.querySelector('#toast');
+    let lotNumber = 4;
+    function showToast(message) { toast.textContent = message; toast.classList.add('show'); window.setTimeout(() => toast.classList.remove('show'), 2600); }
+    form.addEventListener('submit', (event) => { event.preventDefault(); const data = new FormData(form); const score = Number(data.get('score')).toFixed(1); const weight = Number(data.get('weight')).toLocaleString('th-TH'); const price = Number(data.get('price')).toLocaleString('th-TH'); const lotId = 'CF-2607-' + String(lotNumber).padStart(3, '0'); lotNumber += 1; const row = document.createElement('tr'); row.innerHTML = '<td>' + lotId + '</td><td>' + data.get('farmer') + '</td><td>' + data.get('coffeeType') + '</td><td>' + weight + ' กก.</td><td>' + price + ' บาท</td><td>' + score + '</td><td><span class="status warn">รออนุมัติ</span></td>'; table.prepend(row); showToast('บันทึกล็อต ' + lotId + ' เรียบร้อยแล้ว'); });
+    document.querySelector('#newLotBtn').addEventListener('click', () => { document.querySelector('#farmer').focus(); showToast('พร้อมเพิ่มล็อตรับซื้อใหม่'); });
+    document.querySelector('#exportBtn').addEventListener('click', () => { showToast('เตรียมรายงานสรุปสำหรับผู้บริหารแล้ว'); });
+  </script>
+</body>
+</html>
